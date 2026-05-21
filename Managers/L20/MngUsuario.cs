@@ -114,5 +114,59 @@ namespace PetraConectBack.Managers.L20
                 );
             }
         }
+
+        public async Task<LoginUsuarioResponse> LoginUsuario(LoginUsuarioRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngUsuario.LoginUsuario - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para iniciar sesión no puede estar vacía.",
+                        "LOGIN_USUARIO_REQUEST_NULL"
+                    );
+
+                LoginUsuarioResponse? response = await _mngUsuarioL10.LoginUsuario(request);
+                if (response == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al iniciar sesión.",
+                        "LOGIN_USUARIO_DB_EMPTY_RESPONSE"
+                    );
+
+                if (!response.IsOk)
+                    throw new ClientException(
+                        response.Mensaje ?? "No fue posible iniciar sesión.",
+                        "LOGIN_USUARIO_BUSINESS_ERROR"
+                    );
+
+                _mngLogL10.WriteInfo(
+                    "L20.MngUsuario.LoginUsuario - Salida correcta. IdUsuario: " +
+                    response.IdUsuario +
+                    " IdSesion: " +
+                    response.IdSesion
+                );
+
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning(
+                    "L20.MngUsuario.LoginUsuario - Error controlado: " +
+                    ex.Message +
+                    " Código: " +
+                    ex.Codigo
+                );
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al iniciar sesión.",
+                    "LOGIN_USUARIO_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
     }
 }

@@ -53,5 +53,24 @@ namespace PetraConectBack.Managers.L05
             return list;
         }
 
+        public List<NpgsqlParameter> Converter(LoginUsuarioRequest request, int minutosCaduca)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            return _usuarioConverterL04.Converter(request, minutosCaduca);
+        }
+
+        public List<LoginUsuarioResponse> ConverterLoginUsuario(DataTable table)
+        {
+            if (table == null)
+                throw new ArgumentNullException(nameof(table));
+            List<LoginUsuarioResponse> list = new List<LoginUsuarioResponse>();
+            foreach (DataRow row in table.Rows)
+            {
+                LoginUsuarioResponse item = _usuarioConverterL04.ConverterLoginUsuario(row);
+                list.Add(item);
+            }
+            return list;
+        }
     }
 }
