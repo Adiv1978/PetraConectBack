@@ -53,5 +53,27 @@ namespace PetraConectBack.Managers.L05
             }
             return list;
         }
+
+
+        public List<NpgsqlParameter> Converter(GetProductoRequest request, int minutosCaduca)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            return _productoConverterL04.Converter(request, minutosCaduca);
+        }
+
+        public List<ProductoItemResponse> ConverterGetProducto(DataTable table)
+        {
+            if (table == null)
+                throw new ArgumentNullException(nameof(table));
+            List<ProductoItemResponse> list = new List<ProductoItemResponse>();
+            foreach (DataRow row in table.Rows)
+            {
+                ProductoItemResponse item = _productoConverterL04.ConverterGetProducto(row);
+                list.Add(item);
+            }
+            return list;
+        }
+
     }
 }

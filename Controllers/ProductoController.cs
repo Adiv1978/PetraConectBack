@@ -78,5 +78,38 @@ namespace PetraConectBack.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+
+        [HttpPost("GetProducto")]
+        public async Task<ActionResult<GetProductoResponse>> GetProducto([FromBody] GetProductoRequest request)
+        {
+            try
+            {
+                MngProducto mngProducto = new MngProducto(_configuration);
+                GetProductoResponse response = await mngProducto.GetProducto(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                GetProductoResponse response = new GetProductoResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    Productos = new List<ProductoItemResponse>()
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                GetProductoResponse response = new GetProductoResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al consultar productos.",
+                    Productos = new List<ProductoItemResponse>()
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

@@ -26,4 +26,18 @@ FROM petra.actualizar_producto
     @p_iscocina
 );</value>
   </data>
+
+  <data name="GetProducto" xml:space="preserve">
+    <value>SELECT *
+FROM petra.get_producto
+(
+    @p_sessiontoken,
+    @p_minutos_caduca,
+    @p_idproducto,
+    @p_idalegra,
+    @p_referencia,
+    @p_nombre,
+    @p_limit
+);</value>
+  </data>
 </root>
