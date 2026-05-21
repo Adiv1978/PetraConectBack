@@ -24,5 +24,10 @@ namespace PetraConectBack.Managers.L30
         {
             return await _mngUsuarioL20.UpdateUser(request);
         }
+
+        public async Task<LoginUsuarioResponse> LoginUsuario(LoginUsuarioRequest request)
+        {
+            return await _mngUsuarioL20.LoginUsuario(request);
+        }
     }
 }

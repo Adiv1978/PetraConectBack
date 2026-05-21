@@ -84,5 +84,41 @@ namespace PetraConectBack.Controllers
             }
         }
 
+        [HttpPost("LoginUsuario")]
+        public async Task<ActionResult<LoginUsuarioResponse>> LoginUsuario([FromBody] LoginUsuarioRequest request)
+        {
+            try
+            {
+                MngUsuario mngUsuario = new MngUsuario(_configuration);
+                LoginUsuarioResponse response = await mngUsuario.LoginUsuario(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                LoginUsuarioResponse response = new LoginUsuarioResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    IdUsuario = null,
+                    IdSesion = null,
+                    SessionToken = null,
+                    FecCaduca = null
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                LoginUsuarioResponse response = new LoginUsuarioResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al iniciar sesión.",
+                    IdUsuario = null,
+                    IdSesion = null,
+                    SessionToken = null,
+                    FecCaduca = null
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }

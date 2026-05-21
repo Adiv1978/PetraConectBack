@@ -17,9 +17,8 @@ namespace PetraConectBack.Managers.L10
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
-            SettingHelper settingHelper = new SettingHelper(configuration);
-            string connectionString = settingHelper.GetConnectionString();
             _settingHelper = new SettingHelper(configuration);
+            string connectionString = _settingHelper.GetConnectionString();
             _bdHelper = new BDHelper(connectionString);
             _usuarioConverterL05 = new L05.UsuarioConverter();
         }
@@ -51,5 +50,18 @@ namespace PetraConectBack.Managers.L10
             return result[0];
         }
 
+        public async Task<LoginUsuarioResponse?> LoginUsuario(LoginUsuarioRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            string sql = RsUsuario.LoginUsuario;
+            int minutosCaduca = _settingHelper.GetSessionMinutes();
+            List<NpgsqlParameter> parameters = _usuarioConverterL05.Converter(request, minutosCaduca);
+            DataTable table = await _bdHelper.ExecuteDataTableAsync(sql, parameters);
+            List<LoginUsuarioResponse> result = _usuarioConverterL05.ConverterLoginUsuario(table);
+            if (result.Count == 0)
+                return null;
+            return result[0];
+        }
     }
 }

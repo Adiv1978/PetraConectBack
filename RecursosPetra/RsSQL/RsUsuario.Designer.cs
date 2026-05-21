@@ -61,6 +61,21 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a SELECT *
+FROM petra.validar_usuario_crear_sesion
+(
+    @p_nick,
+    @p_pass,
+    @p_minutos_caduca
+);.
+        /// </summary>
+        public static string LoginUsuario {
+            get {
+                return ResourceManager.GetString("LoginUsuario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a SELECT * FROM petra.registrar_usuario (@p_nick, @p_pass,@p_emailalegra,@p_keyalegra);.
         /// </summary>
         public static string SetUsuario {
