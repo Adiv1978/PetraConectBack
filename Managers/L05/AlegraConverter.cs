@@ -1,4 +1,5 @@
 using PetraConectBack.Types.External.Alegra;
+using PetraConectBack.Types.Request;
 using System.Text.Json;
 
 namespace PetraConectBack.Managers.L05
@@ -10,6 +11,16 @@ namespace PetraConectBack.Managers.L05
         public AlegraConverter()
         {
             _alegraConverterL04 = new L04.AlegraConverter();
+        }
+
+        public Dictionary<string, string?> BuildGetItemsQueryParams(GetItemsRequest request, int defaultItemsLimit)
+        {
+            Dictionary<string, string?> queryParams = new Dictionary<string, string?>
+            {
+                ["limit"] = (request.Limit ?? defaultItemsLimit).ToString()
+            };
+            _alegraConverterL04.AddGetItemsOptionalQueryParams(request, queryParams);
+            return queryParams;
         }
 
         public List<AlegraInvoiceResponse> ConverterGetLastFact(string json)
