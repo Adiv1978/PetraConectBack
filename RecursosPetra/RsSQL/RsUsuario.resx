@@ -132,6 +132,13 @@ FROM petra.validar_usuario_crear_sesion
     @p_minutos_caduca
 );</value>
   </data>
+  <data name="GetUsuarioBySessionToken" xml:space="preserve">
+    <value>SELECT *
+FROM petra.getusuariobysessiontoken
+(
+    @p_sessiontoken
+);</value>
+  </data>
   <data name="SetProducto" xml:space="preserve">
     <value>SELECT * FROM petra.registrar_producto (@p_sessiontoken,@p_minutos_caduca,@p_idalegra,@p_referencia,@p_nombre,@p_descripcion,@p_iscocina);</value>
   </data>

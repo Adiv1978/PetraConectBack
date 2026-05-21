@@ -63,5 +63,19 @@ namespace PetraConectBack.Managers.L10
                 return null;
             return result[0];
         }
+
+        public async Task<GetUsuarioBySessionTokenResponse?> GetUsuarioBySessionToken(GetUsuarioBySessionTokenRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            string sql = RsUsuario.GetUsuarioBySessionToken;
+            List<NpgsqlParameter> parameters = _usuarioConverterL05.Converter(request);
+            DataTable table = await _bdHelper.ExecuteDataTableAsync(sql, parameters);
+            List<GetUsuarioBySessionTokenResponse> result = _usuarioConverterL05.ConverterGetUsuarioBySessionToken(table);
+            if (result.Count == 0)
+                return null;
+            return result[0];
+        }
+
     }
 }

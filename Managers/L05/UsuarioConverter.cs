@@ -72,5 +72,26 @@ namespace PetraConectBack.Managers.L05
             }
             return list;
         }
+
+        public List<NpgsqlParameter> Converter(GetUsuarioBySessionTokenRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            return _usuarioConverterL04.Converter(request);
+        }
+
+        public List<GetUsuarioBySessionTokenResponse> ConverterGetUsuarioBySessionToken(DataTable table)
+        {
+            if (table == null)
+                throw new ArgumentNullException(nameof(table));
+            List<GetUsuarioBySessionTokenResponse> list = new List<GetUsuarioBySessionTokenResponse>();
+            foreach (DataRow row in table.Rows)
+            {
+                GetUsuarioBySessionTokenResponse item = _usuarioConverterL04.ConverterGetUsuarioBySessionToken(row);
+                list.Add(item);
+            }
+            return list;
+        }
+
     }
 }

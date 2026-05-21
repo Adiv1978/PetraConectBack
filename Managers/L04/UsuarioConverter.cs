@@ -88,5 +88,35 @@ namespace PetraConectBack.Managers.L04
                 response.FecCaduca = Convert.ToDateTime(row["feccaduca"]);
             return response;
         }
+
+        public List<NpgsqlParameter> Converter(GetUsuarioBySessionTokenRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+            parameters.Add(new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value));
+            return parameters;
+        }
+
+        public GetUsuarioBySessionTokenResponse ConverterGetUsuarioBySessionToken(DataRow row)
+        {
+            if (row == null)
+                throw new ArgumentNullException(nameof(row));
+            GetUsuarioBySessionTokenResponse response = new GetUsuarioBySessionTokenResponse();
+            if (row.Table.Columns.Contains("isok") && row["isok"] != DBNull.Value)
+                response.IsOk = Convert.ToBoolean(row["isok"]);
+            if (row.Table.Columns.Contains("mensaje") && row["mensaje"] != DBNull.Value)
+                response.Mensaje = Convert.ToString(row["mensaje"]);
+            if (row.Table.Columns.Contains("idusuario") && row["idusuario"] != DBNull.Value)
+                response.IdUsuario = Convert.ToInt64(row["idusuario"]);
+            if (row.Table.Columns.Contains("nick") && row["nick"] != DBNull.Value)
+                response.Nick = Convert.ToString(row["nick"]);
+            if (row.Table.Columns.Contains("emailalegra") && row["emailalegra"] != DBNull.Value)
+                response.EmailAlegra = Convert.ToString(row["emailalegra"]);
+            if (row.Table.Columns.Contains("keyalegra") && row["keyalegra"] != DBNull.Value)
+                response.KeyAlegra = Convert.ToString(row["keyalegra"]);
+            return response;
+        }
+
     }
 }
