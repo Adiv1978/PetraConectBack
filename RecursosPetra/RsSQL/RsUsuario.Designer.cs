@@ -76,6 +76,15 @@ FROM petra.validar_usuario_crear_sesion
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a SELECT * FROM petra.registrar_producto (@p_sessiontoken,@p_minutos_caduca,@p_idalegra,@p_referencia,@p_nombre,@p_descripcion,@p_iscocina);.
+        /// </summary>
+        public static string SetProducto {
+            get {
+                return ResourceManager.GetString("SetProducto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a SELECT * FROM petra.registrar_usuario (@p_nick, @p_pass,@p_emailalegra,@p_keyalegra);.
         /// </summary>
         public static string SetUsuario {
