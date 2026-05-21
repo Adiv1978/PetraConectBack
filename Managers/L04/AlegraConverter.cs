@@ -65,9 +65,7 @@ namespace PetraConectBack.Managers.L04
             if (invoiceElement.TryGetProperty("items", out JsonElement itemsElement) && itemsElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement itemElement in itemsElement.EnumerateArray())
-                {
                     response.Items.Add(ConverterGetLastFactItem(itemElement));
-                }
             }
 
             return response;
@@ -77,7 +75,6 @@ namespace PetraConectBack.Managers.L04
         {
             AlegraInvoiceItemResponse response = new AlegraInvoiceItemResponse();
             response.RawJson = itemElement.GetRawText();
-
             if (itemElement.TryGetProperty("id", out JsonElement idElement))
                 response.Id = idElement.ToString();
             if (itemElement.TryGetProperty("description", out JsonElement descriptionElement) && descriptionElement.ValueKind == JsonValueKind.String)
@@ -90,32 +87,62 @@ namespace PetraConectBack.Managers.L04
                 response.Discount = discountValue;
             if (itemElement.TryGetProperty("total", out JsonElement totalElement) && totalElement.TryGetDecimal(out decimal totalValue))
                 response.Total = totalValue;
-
             if (itemElement.TryGetProperty("item", out JsonElement itemSubElement) && itemSubElement.ValueKind == JsonValueKind.Object)
             {
-                if (itemSubElement.TryGetProperty("id", out JsonElement idItemElement))
-                    response.IdItem = idItemElement.ToString();
-                if (itemSubElement.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String)
-                    response.Name = nameElement.GetString();
-                if (itemSubElement.TryGetProperty("reference", out JsonElement referenceElement) && referenceElement.ValueKind == JsonValueKind.String)
-                    response.Reference = referenceElement.GetString();
+                if (itemSubElement.TryGetProperty("id", out JsonElement idItemElement)) response.IdItem = idItemElement.ToString();
+                if (itemSubElement.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String) response.Name = nameElement.GetString();
+                if (itemSubElement.TryGetProperty("reference", out JsonElement referenceElement) && referenceElement.ValueKind == JsonValueKind.String) response.Reference = referenceElement.GetString();
             }
-
             if (itemElement.TryGetProperty("product", out JsonElement productElement) && productElement.ValueKind == JsonValueKind.Object)
             {
-                if (string.IsNullOrWhiteSpace(response.IdItem) && productElement.TryGetProperty("id", out JsonElement idProductElement))
-                    response.IdItem = idProductElement.ToString();
-                if (string.IsNullOrWhiteSpace(response.Name) && productElement.TryGetProperty("name", out JsonElement productNameElement) && productNameElement.ValueKind == JsonValueKind.String)
-                    response.Name = productNameElement.GetString();
-                if (string.IsNullOrWhiteSpace(response.Reference) && productElement.TryGetProperty("reference", out JsonElement productReferenceElement) && productReferenceElement.ValueKind == JsonValueKind.String)
-                    response.Reference = productReferenceElement.GetString();
+                if (string.IsNullOrWhiteSpace(response.IdItem) && productElement.TryGetProperty("id", out JsonElement idProductElement)) response.IdItem = idProductElement.ToString();
+                if (string.IsNullOrWhiteSpace(response.Name) && productElement.TryGetProperty("name", out JsonElement productNameElement) && productNameElement.ValueKind == JsonValueKind.String) response.Name = productNameElement.GetString();
+                if (string.IsNullOrWhiteSpace(response.Reference) && productElement.TryGetProperty("reference", out JsonElement productReferenceElement) && productReferenceElement.ValueKind == JsonValueKind.String) response.Reference = productReferenceElement.GetString();
             }
+            if (string.IsNullOrWhiteSpace(response.Name) && itemElement.TryGetProperty("name", out JsonElement nameRootElement) && nameRootElement.ValueKind == JsonValueKind.String) response.Name = nameRootElement.GetString();
+            if (string.IsNullOrWhiteSpace(response.Reference) && itemElement.TryGetProperty("reference", out JsonElement referenceRootElement) && referenceRootElement.ValueKind == JsonValueKind.String) response.Reference = referenceRootElement.GetString();
+            return response;
+        }
 
-            if (string.IsNullOrWhiteSpace(response.Name) && itemElement.TryGetProperty("name", out JsonElement nameRootElement) && nameRootElement.ValueKind == JsonValueKind.String)
-                response.Name = nameRootElement.GetString();
-            if (string.IsNullOrWhiteSpace(response.Reference) && itemElement.TryGetProperty("reference", out JsonElement referenceRootElement) && referenceRootElement.ValueKind == JsonValueKind.String)
-                response.Reference = referenceRootElement.GetString();
+        public AlegraItemResponse ConverterGetItems(JsonElement itemElement)
+        {
+            AlegraItemResponse response = new AlegraItemResponse { RawJson = itemElement.GetRawText(), Inventariable = false };
+            if (itemElement.TryGetProperty("id", out JsonElement idElement)) response.Id = idElement.ToString();
+            if (itemElement.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String) response.Name = nameElement.GetString();
+            if (itemElement.TryGetProperty("description", out JsonElement descriptionElement) && descriptionElement.ValueKind == JsonValueKind.String) response.Description = descriptionElement.GetString();
+            if (itemElement.TryGetProperty("reference", out JsonElement referenceElement))
+            {
+                if (referenceElement.ValueKind == JsonValueKind.String) response.Reference = referenceElement.GetString();
+                else if (referenceElement.ValueKind == JsonValueKind.Object && referenceElement.TryGetProperty("reference", out JsonElement referenceSubElement) && referenceSubElement.ValueKind == JsonValueKind.String) response.Reference = referenceSubElement.GetString();
+            }
+            if (itemElement.TryGetProperty("status", out JsonElement statusElement)) response.Status = statusElement.ToString();
+            if (itemElement.TryGetProperty("type", out JsonElement typeElement)) response.Type = typeElement.ToString();
+            if (itemElement.TryGetProperty("category", out JsonElement categoryElement) && categoryElement.ValueKind == JsonValueKind.Object)
+            {
+                if (categoryElement.TryGetProperty("id", out JsonElement categoryIdElement)) response.CategoryId = categoryIdElement.ToString();
+                if (categoryElement.TryGetProperty("name", out JsonElement categoryNameElement) && categoryNameElement.ValueKind == JsonValueKind.String) response.CategoryName = categoryNameElement.GetString();
+            }
+            if (itemElement.TryGetProperty("inventory", out JsonElement inventoryElement) && inventoryElement.ValueKind == JsonValueKind.Object)
+            {
+                response.Inventariable = true;
+                if (inventoryElement.TryGetProperty("unit", out JsonElement unitElement) && unitElement.ValueKind == JsonValueKind.String) response.InventoryUnit = unitElement.GetString();
+                if (inventoryElement.TryGetProperty("availableQuantity", out JsonElement availableQuantityElement) && availableQuantityElement.TryGetDecimal(out decimal availableQuantity)) response.AvailableQuantity = availableQuantity;
+                if (inventoryElement.TryGetProperty("unitCost", out JsonElement unitCostElement) && unitCostElement.TryGetDecimal(out decimal unitCost)) response.UnitCost = unitCost;
+                if (inventoryElement.TryGetProperty("initialQuantity", out JsonElement initialQuantityElement) && initialQuantityElement.TryGetDecimal(out decimal initialQuantity)) response.InitialQuantity = initialQuantity;
+            }
+            if (itemElement.TryGetProperty("price", out JsonElement priceElement) && priceElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement price in priceElement.EnumerateArray()) response.Prices.Add(ConverterGetItemPrice(price));
+            }
+            return response;
+        }
 
+        public AlegraItemPriceResponse ConverterGetItemPrice(JsonElement priceElement)
+        {
+            AlegraItemPriceResponse response = new AlegraItemPriceResponse { RawJson = priceElement.GetRawText() };
+            if (priceElement.TryGetProperty("idPriceList", out JsonElement idPriceListElement)) response.IdPriceList = idPriceListElement.ToString();
+            if (priceElement.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String) response.Name = nameElement.GetString();
+            if (priceElement.TryGetProperty("price", out JsonElement priceValueElement) && priceValueElement.TryGetDecimal(out decimal price)) response.Price = price;
             return response;
         }
     }

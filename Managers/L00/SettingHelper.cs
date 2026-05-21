@@ -135,6 +135,20 @@ namespace PetraConectBack.Managers.L00
             return $"{baseUrl}{endpoint}";
         }
 
+        public int GetAlegraItemsLimit()
+        {
+            string? value = _configuration["AlegraConfig:ItemsLimit"];
+            if (string.IsNullOrWhiteSpace(value))
+                return 30;
+            if (!int.TryParse(value, out int limit))
+                throw new Exception("El valor 'AlegraConfig:ItemsLimit' debe ser numérico.");
+            if (limit <= 0)
+                return 30;
+            if (limit > 30)
+                return 30;
+            return limit;
+        }
+
         public int GetAlegraLastFactLimit()
         {
             string? value = _configuration["AlegraConfig:LastFactLimit"];

@@ -46,5 +46,36 @@ namespace PetraConectBack.Controllers
                 });
             }
         }
+
+        [HttpPost("GetItems")]
+        public async Task<ActionResult<GetItemsResponse>> GetItems([FromBody] GetItemsRequest request)
+        {
+            try
+            {
+                MngAlegra mngAlegra = new MngAlegra(_configuration);
+                GetItemsResponse response = await mngAlegra.GetItems(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                return BadRequest(new GetItemsResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    Total = null,
+                    Items = new List<AlegraItemResponse>()
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new GetItemsResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al consultar los items de Alegra.",
+                    Total = null,
+                    Items = new List<AlegraItemResponse>()
+                });
+            }
+        }
     }
 }
