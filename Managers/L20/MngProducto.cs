@@ -59,5 +59,48 @@ namespace PetraConectBack.Managers.L20
                 );
             }
         }
+
+        public async Task<UpdateProductoResponse> UpdateProducto(UpdateProductoRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngProducto.UpdateProducto - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para actualizar el producto no puede estar vacía.",
+                        "UPDATE_PRODUCTO_REQUEST_NULL"
+                    );
+
+                UpdateProductoResponse? response = await _mngProductoL10.UpdateProducto(request);
+                if (response == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al actualizar el producto.",
+                        "UPDATE_PRODUCTO_DB_EMPTY_RESPONSE"
+                    );
+
+                if (!response.IsOk)
+                    throw new ClientException(
+                        response.Mensaje ?? "No fue posible actualizar el producto.",
+                        "UPDATE_PRODUCTO_BUSINESS_ERROR"
+                    );
+
+                _mngLogL10.WriteInfo("L20.MngProducto.UpdateProducto - Salida correcta. IdProducto: " + response.IdProducto);
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning("L20.MngProducto.UpdateProducto - Error controlado: " + ex.Message + " Código: " + ex.Codigo);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al actualizar el producto.",
+                    "UPDATE_PRODUCTO_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
     }
 }
