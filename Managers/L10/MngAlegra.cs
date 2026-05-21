@@ -26,7 +26,6 @@ namespace PetraConectBack.Managers.L10
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
-
             Dictionary<string, string?> queryParams = new Dictionary<string, string?>
             {
                 ["limit"] = _lastFactLimit.ToString(),
@@ -34,7 +33,6 @@ namespace PetraConectBack.Managers.L10
                 ["order_field"] = "id",
                 ["date"] = DateTime.Now.ToString("yyyy-MM-dd")
             };
-
             string json = await _alegraHelper.GetInvoicesAsync(request.EmailAlegra ?? string.Empty, request.KeyAlegra ?? string.Empty, queryParams);
             return _alegraConverterL05.ConverterGetLastFact(json);
         }
