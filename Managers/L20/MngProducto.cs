@@ -102,5 +102,51 @@ namespace PetraConectBack.Managers.L20
                 );
             }
         }
+
+
+        public async Task<GetProductoResponse> GetProducto(GetProductoRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngProducto.GetProducto - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para consultar productos no puede estar vacía.",
+                        "GET_PRODUCTO_REQUEST_NULL"
+                    );
+
+                List<ProductoItemResponse>? productos = await _mngProductoL10.GetProducto(request);
+                if (productos == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al consultar productos.",
+                        "GET_PRODUCTO_DB_EMPTY_RESPONSE"
+                    );
+
+                GetProductoResponse response = new GetProductoResponse
+                {
+                    IsOk = true,
+                    Mensaje = productos.Count > 0 ? "Productos consultados correctamente" : "No se encontraron productos",
+                    Productos = productos
+                };
+
+                _mngLogL10.WriteInfo("L20.MngProducto.GetProducto - Salida correcta. CantidadProductos: " + productos.Count);
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning("L20.MngProducto.GetProducto - Error controlado: " + ex.Message + " Código: " + ex.Codigo);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al consultar productos.",
+                    "GET_PRODUCTO_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
+
     }
 }

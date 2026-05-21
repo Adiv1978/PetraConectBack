@@ -23,5 +23,12 @@ namespace PetraConectBack.Managers.L30
         {
             return await _mngProductoL20.UpdateProducto(request);
         }
+
+
+        public async Task<GetProductoResponse> GetProducto(GetProductoRequest request)
+        {
+            return await _mngProductoL20.GetProducto(request);
+        }
+
     }
 }

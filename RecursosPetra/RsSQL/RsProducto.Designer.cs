@@ -43,5 +43,13 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
                 return ResourceManager.GetString("UpdateProducto", resourceCulture);
             }
         }
+
+
+        public static string GetProducto {
+            get {
+                return ResourceManager.GetString("GetProducto", resourceCulture);
+            }
+        }
+
     }
 }
