@@ -22,4 +22,14 @@ FROM petra.get_factura
     @p_idalegra
 );</value>
   </data>
+  <data name="GetFacturasByStatusActual" xml:space="preserve">
+    <value>SELECT *
+FROM petra.get_facturas_por_status_actual
+(
+    @p_sessiontoken,
+    @p_minutos_caduca,
+    @p_status,
+    @p_limit
+);</value>
+  </data>
 </root>

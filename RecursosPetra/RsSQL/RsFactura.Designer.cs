@@ -37,5 +37,11 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
                 return ResourceManager.GetString("GetFactura", resourceCulture);
             }
         }
+
+        public static string GetFacturasByStatusActual {
+            get {
+                return ResourceManager.GetString("GetFacturasByStatusActual", resourceCulture);
+            }
+        }
     }
 }

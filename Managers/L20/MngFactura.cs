@@ -33,13 +33,7 @@ namespace PetraConectBack.Managers.L20
                 if (facturas == null)
                     throw new ClientException("No se recibió respuesta desde la base de datos al consultar la factura.", "GET_FACTURA_EMPTY_RESPONSE");
 
-                GetFacturaResponse response = new GetFacturaResponse
-                {
-                    IsOk = true,
-                    Mensaje = facturas.Count > 0 ? "Factura consultada correctamente" : "No se encontró la factura",
-                    Facturas = facturas
-                };
-
+                GetFacturaResponse response = new GetFacturaResponse { IsOk = true, Mensaje = facturas.Count > 0 ? "Factura consultada correctamente" : "No se encontró la factura", Facturas = facturas };
                 _mngLogL10.WriteInfo("L20.MngFactura.GetFactura - Salida correcta. CantidadFacturas: " + facturas.Count);
                 return response;
             }
@@ -52,6 +46,50 @@ namespace PetraConectBack.Managers.L20
             {
                 _mngLogL10.WriteException(ex);
                 throw new ClientException("Ocurrió un error interno al consultar la factura.", "GET_FACTURA_INTERNAL_ERROR", ex);
+            }
+        }
+
+        public async Task<GetFacturaByStatusResponse> GetFacturasByStatusActual(GetFacturaByStatusRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngFactura.GetFacturasByStatusActual - Entrada.");
+                if (request == null)
+                    throw new ClientException("La solicitud para consultar facturas por estatus no puede estar vacía.", "GET_FACTURAS_STATUS_REQUEST_NULL");
+                if (string.IsNullOrWhiteSpace(request.SessionToken))
+                    throw new ClientException("El token de sesión es obligatorio para consultar facturas por estatus.", "GET_FACTURAS_STATUS_SESSION_TOKEN_EMPTY");
+                if (string.IsNullOrWhiteSpace(request.Status))
+                    throw new ClientException("El estatus es obligatorio para consultar facturas.", "GET_FACTURAS_STATUS_STATUS_EMPTY");
+
+                string[] validStatuses = new[] { "Enviado", "Recibido", "Aceptado", "Procesando", "Entregado", "Rechazado", "Cancelado" };
+                if (!validStatuses.Contains(request.Status, StringComparer.OrdinalIgnoreCase))
+                    throw new ClientException("El estatus enviado no es válido.", "GET_FACTURAS_STATUS_INVALID");
+
+                if (request.Limit.HasValue && (request.Limit.Value <= 0 || request.Limit.Value > 500))
+                    throw new ClientException("El límite debe ser mayor a 0 y menor o igual a 500.", "GET_FACTURAS_STATUS_LIMIT_INVALID");
+
+                List<FacturaItemResponse>? facturas = await _mngFacturaL10.GetFacturasByStatusActual(request);
+                if (facturas == null)
+                    throw new ClientException("No se recibió respuesta desde la base de datos al consultar facturas por estatus.", "GET_FACTURAS_STATUS_EMPTY_RESPONSE");
+
+                GetFacturaByStatusResponse response = new GetFacturaByStatusResponse
+                {
+                    IsOk = true,
+                    Mensaje = facturas.Count > 0 ? "Facturas consultadas correctamente" : "No se encontraron facturas para el estatus indicado",
+                    Facturas = facturas
+                };
+                _mngLogL10.WriteInfo("L20.MngFactura.GetFacturasByStatusActual - Salida correcta. CantidadFacturas: " + facturas.Count);
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning("L20.MngFactura.GetFacturasByStatusActual - Error controlado: " + ex.Message + " Código: " + ex.Codigo);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException("Ocurrió un error interno al consultar facturas por estatus.", "GET_FACTURAS_STATUS_INTERNAL_ERROR", ex);
             }
         }
     }
