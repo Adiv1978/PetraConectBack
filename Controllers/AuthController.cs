@@ -120,5 +120,44 @@ namespace PetraConectBack.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpPost("GetUsuarioBySessionToken")]
+        public async Task<ActionResult<GetUsuarioBySessionTokenResponse>> GetUsuarioBySessionToken([FromBody] GetUsuarioBySessionTokenRequest request)
+        {
+            try
+            {
+                MngUsuario mngUsuario = new MngUsuario(_configuration);
+                GetUsuarioBySessionTokenResponse response =
+                    await mngUsuario.GetUsuarioBySessionToken(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                GetUsuarioBySessionTokenResponse response = new GetUsuarioBySessionTokenResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    IdUsuario = null,
+                    Nick = null,
+                    EmailAlegra = null,
+                    KeyAlegra = null
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                GetUsuarioBySessionTokenResponse response = new GetUsuarioBySessionTokenResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al consultar el usuario por token de sesión.",
+                    IdUsuario = null,
+                    Nick = null,
+                    EmailAlegra = null,
+                    KeyAlegra = null
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

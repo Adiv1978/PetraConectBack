@@ -29,5 +29,11 @@ namespace PetraConectBack.Managers.L30
         {
             return await _mngUsuarioL20.LoginUsuario(request);
         }
+
+        public async Task<GetUsuarioBySessionTokenResponse> GetUsuarioBySessionToken(GetUsuarioBySessionTokenRequest request)
+        {
+            return await _mngUsuarioL20.GetUsuarioBySessionToken(request);
+        }
+
     }
 }

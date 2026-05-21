@@ -168,5 +168,65 @@ namespace PetraConectBack.Managers.L20
                 );
             }
         }
+
+        public async Task<GetUsuarioBySessionTokenResponse> GetUsuarioBySessionToken(GetUsuarioBySessionTokenRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngUsuario.GetUsuarioBySessionToken - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para consultar el usuario por token de sesión no puede estar vacía.",
+                        "GET_USUARIO_SESSION_TOKEN_REQUEST_NULL"
+                    );
+                if (string.IsNullOrWhiteSpace(request.SessionToken))
+                    throw new ClientException(
+                        "El token de sesión no puede estar vacío.",
+                        "GET_USUARIO_SESSION_TOKEN_EMPTY"
+                    );
+
+                GetUsuarioBySessionTokenResponse? response = await _mngUsuarioL10.GetUsuarioBySessionToken(request);
+                if (response == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al consultar el usuario por token de sesión.",
+                        "GET_USUARIO_SESSION_TOKEN_DB_EMPTY_RESPONSE"
+                    );
+
+                if (!response.IsOk)
+                    throw new ClientException(
+                        response.Mensaje ?? "No fue posible consultar el usuario por token de sesión.",
+                        "GET_USUARIO_SESSION_TOKEN_BUSINESS_ERROR"
+                    );
+
+                _mngLogL10.WriteInfo(
+                    "L20.MngUsuario.GetUsuarioBySessionToken - Salida correcta. IdUsuario: " +
+                    response.IdUsuario +
+                    " Nick: " +
+                    response.Nick
+                );
+
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning(
+                    "L20.MngUsuario.GetUsuarioBySessionToken - Error controlado: " +
+                    ex.Message +
+                    " Código: " +
+                    ex.Codigo
+                );
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al consultar el usuario por token de sesión.",
+                    "GET_USUARIO_SESSION_TOKEN_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
+
     }
 }
