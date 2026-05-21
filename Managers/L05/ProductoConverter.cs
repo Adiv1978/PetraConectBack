@@ -33,5 +33,25 @@ namespace PetraConectBack.Managers.L05
             }
             return list;
         }
+
+        public List<NpgsqlParameter> Converter(UpdateProductoRequest request, int minutosCaduca)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            return _productoConverterL04.Converter(request, minutosCaduca);
+        }
+
+        public List<UpdateProductoResponse> ConverterUpdateProducto(DataTable table)
+        {
+            if (table == null)
+                throw new ArgumentNullException(nameof(table));
+            List<UpdateProductoResponse> list = new List<UpdateProductoResponse>();
+            foreach (DataRow row in table.Rows)
+            {
+                UpdateProductoResponse item = _productoConverterL04.ConverterUpdateProducto(row);
+                list.Add(item);
+            }
+            return list;
+        }
     }
 }

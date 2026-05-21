@@ -35,5 +35,19 @@ namespace PetraConectBack.Managers.L10
                 return null;
             return result[0];
         }
+
+        public async Task<UpdateProductoResponse?> UpdateProducto(UpdateProductoRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            string sql = RsProducto.UpdateProducto;
+            int minutosCaduca = _settingHelper.GetSessionMinutes();
+            var parameters = _productoConverterL05.Converter(request, minutosCaduca);
+            DataTable table = await _bdHelper.ExecuteDataTableAsync(sql, parameters);
+            List<UpdateProductoResponse> result = _productoConverterL05.ConverterUpdateProducto(table);
+            if (result.Count == 0)
+                return null;
+            return result[0];
+        }
     }
 }
