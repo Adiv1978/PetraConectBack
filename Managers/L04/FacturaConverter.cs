@@ -1,4 +1,5 @@
 using Npgsql;
+using NpgsqlTypes;
 using PetraConectBack.Types.Request;
 using PetraConectBack.Types.Response;
 using System.Data;
@@ -19,7 +20,23 @@ namespace PetraConectBack.Managers.L04
             };
         }
 
+        public List<NpgsqlParameter> Converter(GetFacturaByStatusRequest request, int minutosCaduca)
+        {
+            return new List<NpgsqlParameter>
+            {
+                new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value),
+                new NpgsqlParameter("@p_minutos_caduca", minutosCaduca),
+                new NpgsqlParameter("@p_status", NpgsqlDbType.Varchar) { Value = request.Status ?? (object)DBNull.Value },
+                new NpgsqlParameter("@p_limit", request.Limit ?? 100)
+            };
+        }
+
         public FacturaItemResponse ConverterGetFactura(DataRow row)
+        {
+            return ConverterFacturaItem(row);
+        }
+
+        public FacturaItemResponse ConverterFacturaItem(DataRow row)
         {
             FacturaItemResponse item = new FacturaItemResponse();
             item.IdFactura = row["idfactura"] == DBNull.Value ? null : Convert.ToInt64(row["idfactura"]);
@@ -65,67 +82,31 @@ namespace PetraConectBack.Managers.L04
         public FacturaDetalleItemResponse ConverterFacturaDetalle(JsonElement detalleElement)
         {
             FacturaDetalleItemResponse item = new FacturaDetalleItemResponse { RawJson = detalleElement.GetRawText() };
-
-            if (detalleElement.ValueKind != JsonValueKind.Object)
-                return item;
-
-            if (detalleElement.TryGetProperty("idFacturaDet", out JsonElement idFacturaDet) && idFacturaDet.ValueKind == JsonValueKind.Number && idFacturaDet.TryGetInt64(out long idFacturaDetValue))
-                item.IdFacturaDet = idFacturaDetValue;
-
-            if (detalleElement.TryGetProperty("idProducto", out JsonElement idProducto) && idProducto.ValueKind == JsonValueKind.Number && idProducto.TryGetInt64(out long idProductoValue))
-                item.IdProducto = idProductoValue;
-
-            if (detalleElement.TryGetProperty("idAlegra", out JsonElement idAlegra) && idAlegra.ValueKind == JsonValueKind.String)
-                item.IdAlegra = idAlegra.GetString();
-
-            if (detalleElement.TryGetProperty("referencia", out JsonElement referencia) && referencia.ValueKind == JsonValueKind.String)
-                item.Referencia = referencia.GetString();
-
-            if (detalleElement.TryGetProperty("nombre", out JsonElement nombre) && nombre.ValueKind == JsonValueKind.String)
-                item.Nombre = nombre.GetString();
-
-            if (detalleElement.TryGetProperty("descripcion", out JsonElement descripcion) && descripcion.ValueKind == JsonValueKind.String)
-                item.Descripcion = descripcion.GetString();
-
+            if (detalleElement.ValueKind != JsonValueKind.Object) return item;
+            if (detalleElement.TryGetProperty("idFacturaDet", out JsonElement idFacturaDet) && idFacturaDet.ValueKind == JsonValueKind.Number && idFacturaDet.TryGetInt64(out long v1)) item.IdFacturaDet = v1;
+            if (detalleElement.TryGetProperty("idProducto", out JsonElement idProducto) && idProducto.ValueKind == JsonValueKind.Number && idProducto.TryGetInt64(out long v2)) item.IdProducto = v2;
+            if (detalleElement.TryGetProperty("idAlegra", out JsonElement idAlegra) && idAlegra.ValueKind == JsonValueKind.String) item.IdAlegra = idAlegra.GetString();
+            if (detalleElement.TryGetProperty("referencia", out JsonElement referencia) && referencia.ValueKind == JsonValueKind.String) item.Referencia = referencia.GetString();
+            if (detalleElement.TryGetProperty("nombre", out JsonElement nombre) && nombre.ValueKind == JsonValueKind.String) item.Nombre = nombre.GetString();
+            if (detalleElement.TryGetProperty("descripcion", out JsonElement descripcion) && descripcion.ValueKind == JsonValueKind.String) item.Descripcion = descripcion.GetString();
             if (detalleElement.TryGetProperty("isCocina", out JsonElement isCocina))
             {
-                if (isCocina.ValueKind == JsonValueKind.True || isCocina.ValueKind == JsonValueKind.False)
-                    item.IsCocina = isCocina.GetBoolean();
-                else if (isCocina.ValueKind == JsonValueKind.String && bool.TryParse(isCocina.GetString(), out bool isCocinaValue))
-                    item.IsCocina = isCocinaValue;
+                if (isCocina.ValueKind == JsonValueKind.True || isCocina.ValueKind == JsonValueKind.False) item.IsCocina = isCocina.GetBoolean();
+                else if (isCocina.ValueKind == JsonValueKind.String && bool.TryParse(isCocina.GetString(), out bool b)) item.IsCocina = b;
             }
-
             return item;
         }
 
         public FacturaStatusItemResponse ConverterFacturaStatus(JsonElement statusElement)
         {
             FacturaStatusItemResponse item = new FacturaStatusItemResponse { RawJson = statusElement.GetRawText() };
-
-            if (statusElement.ValueKind != JsonValueKind.Object)
-                return item;
-
-            if (statusElement.TryGetProperty("idFacturaStatus", out JsonElement idFacturaStatus) && idFacturaStatus.ValueKind == JsonValueKind.Number && idFacturaStatus.TryGetInt64(out long idFacturaStatusValue))
-                item.IdFacturaStatus = idFacturaStatusValue;
-
-            if (statusElement.TryGetProperty("idUsuario", out JsonElement idUsuario) && idUsuario.ValueKind == JsonValueKind.Number && idUsuario.TryGetInt64(out long idUsuarioValue))
-                item.IdUsuario = idUsuarioValue;
-
-            if (statusElement.TryGetProperty("usuarioNick", out JsonElement usuarioNick) && usuarioNick.ValueKind == JsonValueKind.String)
-                item.UsuarioNick = usuarioNick.GetString();
-
-            if (statusElement.TryGetProperty("fecReg", out JsonElement fecReg))
-            {
-                if (fecReg.ValueKind == JsonValueKind.String && DateTime.TryParse(fecReg.GetString(), out DateTime fecRegValue))
-                    item.FecReg = fecRegValue;
-            }
-
-            if (statusElement.TryGetProperty("comentario", out JsonElement comentario) && comentario.ValueKind == JsonValueKind.String)
-                item.Comentario = comentario.GetString();
-
-            if (statusElement.TryGetProperty("status", out JsonElement status) && status.ValueKind == JsonValueKind.String)
-                item.Status = status.GetString();
-
+            if (statusElement.ValueKind != JsonValueKind.Object) return item;
+            if (statusElement.TryGetProperty("idFacturaStatus", out JsonElement idFacturaStatus) && idFacturaStatus.ValueKind == JsonValueKind.Number && idFacturaStatus.TryGetInt64(out long v1)) item.IdFacturaStatus = v1;
+            if (statusElement.TryGetProperty("idUsuario", out JsonElement idUsuario) && idUsuario.ValueKind == JsonValueKind.Number && idUsuario.TryGetInt64(out long v2)) item.IdUsuario = v2;
+            if (statusElement.TryGetProperty("usuarioNick", out JsonElement usuarioNick) && usuarioNick.ValueKind == JsonValueKind.String) item.UsuarioNick = usuarioNick.GetString();
+            if (statusElement.TryGetProperty("fecReg", out JsonElement fecReg) && fecReg.ValueKind == JsonValueKind.String && DateTime.TryParse(fecReg.GetString(), out DateTime d)) item.FecReg = d;
+            if (statusElement.TryGetProperty("comentario", out JsonElement comentario) && comentario.ValueKind == JsonValueKind.String) item.Comentario = comentario.GetString();
+            if (statusElement.TryGetProperty("status", out JsonElement status) && status.ValueKind == JsonValueKind.String) item.Status = status.GetString();
             return item;
         }
     }

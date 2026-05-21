@@ -47,5 +47,36 @@ namespace PetraConectBack.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpPost("GetFacturasByStatusActual")]
+        public async Task<ActionResult<GetFacturaByStatusResponse>> GetFacturasByStatusActual([FromBody] GetFacturaByStatusRequest request)
+        {
+            try
+            {
+                MngFactura mngFactura = new MngFactura(_configuration);
+                GetFacturaByStatusResponse response = await mngFactura.GetFacturasByStatusActual(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                GetFacturaByStatusResponse response = new GetFacturaByStatusResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    Facturas = new List<FacturaItemResponse>()
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                GetFacturaByStatusResponse response = new GetFacturaByStatusResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al consultar las facturas por estatus.",
+                    Facturas = new List<FacturaItemResponse>()
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }
