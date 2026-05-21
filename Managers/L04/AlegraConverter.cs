@@ -1,10 +1,31 @@
 using PetraConectBack.Types.External.Alegra;
+using PetraConectBack.Types.Request;
 using System.Text.Json;
 
 namespace PetraConectBack.Managers.L04
 {
     public class AlegraConverter
     {
+        public void AddGetItemsOptionalQueryParams(GetItemsRequest request, Dictionary<string, string?> queryParams)
+        {
+            if (request.Start.HasValue) queryParams["start"] = request.Start.Value.ToString();
+            if (!string.IsNullOrWhiteSpace(request.OrderDirection)) queryParams["order_direction"] = request.OrderDirection;
+            if (!string.IsNullOrWhiteSpace(request.OrderField)) queryParams["order_field"] = request.OrderField;
+            if (!string.IsNullOrWhiteSpace(request.Query)) queryParams["query"] = request.Query;
+            if (request.Metadata.HasValue) queryParams["metadata"] = request.Metadata.Value.ToString().ToLowerInvariant();
+            if (!string.IsNullOrWhiteSpace(request.IdWarehouse)) queryParams["idWarehouse"] = request.IdWarehouse;
+            if (!string.IsNullOrWhiteSpace(request.Name)) queryParams["name"] = request.Name;
+            if (!string.IsNullOrWhiteSpace(request.Reference)) queryParams["reference"] = request.Reference;
+            if (!string.IsNullOrWhiteSpace(request.Description)) queryParams["description"] = request.Description;
+            if (!string.IsNullOrWhiteSpace(request.PriceListId)) queryParams["priceList_id"] = request.PriceListId;
+            if (!string.IsNullOrWhiteSpace(request.IdItemCategory)) queryParams["idItemCategory"] = request.IdItemCategory;
+            if (!string.IsNullOrWhiteSpace(request.Type)) queryParams["type"] = request.Type;
+            if (!string.IsNullOrWhiteSpace(request.Status)) queryParams["status"] = request.Status;
+            if (request.Inventariable.HasValue) queryParams["inventariable"] = request.Inventariable.Value.ToString().ToLowerInvariant();
+            if (!string.IsNullOrWhiteSpace(request.Fields)) queryParams["fields"] = request.Fields;
+            if (!string.IsNullOrWhiteSpace(request.Mode)) queryParams["mode"] = request.Mode;
+        }
+
         public AlegraInvoiceResponse ConverterGetLastFact(JsonElement invoiceElement)
         {
             AlegraInvoiceResponse response = new AlegraInvoiceResponse();
