@@ -134,5 +134,20 @@ namespace PetraConectBack.Managers.L00
                 endpoint = "/" + endpoint;
             return $"{baseUrl}{endpoint}";
         }
+
+        public int GetAlegraLastFactLimit()
+        {
+            string? value = _configuration["AlegraConfig:LastFactLimit"];
+            if (string.IsNullOrWhiteSpace(value))
+                return 10;
+            if (!int.TryParse(value, out int limit))
+                throw new Exception("El valor 'AlegraConfig:LastFactLimit' debe ser numérico.");
+            if (limit <= 0)
+                return 10;
+            if (limit > 30)
+                return 30;
+            return limit;
+        }
+
     }
 }
