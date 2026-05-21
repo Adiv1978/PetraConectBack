@@ -1,0 +1,6 @@
+@PetraConectBack_HostAddress = http://localhost:5191
+
+GET {{PetraConectBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

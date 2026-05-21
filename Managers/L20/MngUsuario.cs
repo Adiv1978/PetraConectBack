@@ -1,0 +1,118 @@
+﻿using Microsoft.Extensions.Configuration;
+using PetraConectBack.Types.Request;
+using PetraConectBack.Types.Response;
+using PetraConectBack.Types.Utility;
+
+namespace PetraConectBack.Managers.L20
+{
+    public class MngUsuario
+    {
+        private readonly L10.MngUsuario _mngUsuarioL10;
+        private readonly L10.MngLog _mngLogL10;
+
+        public MngUsuario(IConfiguration configuration)
+        {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+            _mngUsuarioL10 = new L10.MngUsuario(configuration);
+            _mngLogL10 = new L10.MngLog(configuration);
+        }
+
+        public async Task<SetUsuarioResponse> SetUsuario(SetUsuarioRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngUsuario.SetUsuario - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para registrar el usuario no puede estar vacía.",
+                        "SET_USUARIO_REQUEST_NULL"
+                    );
+                SetUsuarioResponse? response =  await _mngUsuarioL10.SetUsuario(request);
+                if (response == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al registrar el usuario.",
+                        "SET_USUARIO_DB_EMPTY_RESPONSE"
+                    );
+                if (!response.IsOk)
+                    throw new ClientException(
+                        response.Mensaje ?? "No fue posible registrar el usuario.",
+                        "SET_USUARIO_BUSINESS_ERROR"
+                    );
+                _mngLogL10.WriteInfo(
+                    "L20.MngUsuario.SetUsuario - Salida correcta. IdUsuario: " +
+                    response.IdUsuario
+                );
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning(
+                    "L20.MngUsuario.SetUsuario - Error controlado: " +
+                    ex.Message +
+                    " Código: " +
+                    ex.Codigo
+                );
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al registrar el usuario.",
+                    "SET_USUARIO_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
+
+        public async Task<UpdateUsuarioResponse> UpdateUser(UpdateUsuarioRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngUsuario.UpdateUser - Entrada.");
+                if (request == null)
+                    throw new ClientException(
+                        "La solicitud para actualizar el usuario no puede estar vacía.",
+                        "UPDATE_USUARIO_REQUEST_NULL"
+                    );
+                UpdateUsuarioResponse? response =
+                    await _mngUsuarioL10.UpdateUser(request);
+                if (response == null)
+                    throw new ClientException(
+                        "No se recibió respuesta desde la base de datos al actualizar el usuario.",
+                        "UPDATE_USUARIO_DB_EMPTY_RESPONSE"
+                    );
+                if (!response.IsOk)
+                    throw new ClientException(
+                        response.Mensaje ?? "No fue posible actualizar el usuario.",
+                        "UPDATE_USUARIO_BUSINESS_ERROR"
+                    );
+                _mngLogL10.WriteInfo(
+                    "L20.MngUsuario.UpdateUser - Salida correcta. IdUsuario: " +
+                    response.IdUsuario
+                );
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning(
+                    "L20.MngUsuario.UpdateUser - Error controlado: " +
+                    ex.Message +
+                    " Código: " +
+                    ex.Codigo
+                );
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException(
+                    "Ocurrió un error interno al actualizar el usuario.",
+                    "UPDATE_USUARIO_INTERNAL_ERROR",
+                    ex
+                );
+            }
+        }
+    }
+}
