@@ -18,5 +18,10 @@ namespace PetraConectBack.Managers.L30
         {
             return await _mngAlegraL20.GetLastFact(request);
         }
+
+        public async Task<GetItemsResponse> GetItems(GetItemsRequest request)
+        {
+            return await _mngAlegraL20.GetItems(request);
+        }
     }
 }

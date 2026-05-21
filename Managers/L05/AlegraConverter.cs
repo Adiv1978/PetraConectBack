@@ -36,5 +36,41 @@ namespace PetraConectBack.Managers.L05
 
             return list;
         }
+
+        public List<AlegraItemResponse> ConverterGetItems(string json, out int? total)
+        {
+            total = null;
+            List<AlegraItemResponse> list = new List<AlegraItemResponse>();
+            if (string.IsNullOrWhiteSpace(json))
+                return list;
+
+            using JsonDocument jsonDocument = JsonDocument.Parse(json);
+            JsonElement root = jsonDocument.RootElement;
+
+            if (root.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement itemElement in root.EnumerateArray())
+                    list.Add(_alegraConverterL04.ConverterGetItems(itemElement));
+            }
+            else if (root.ValueKind == JsonValueKind.Object)
+            {
+                if (root.TryGetProperty("metadata", out JsonElement metadataElement)
+                    && metadataElement.ValueKind == JsonValueKind.Object
+                    && metadataElement.TryGetProperty("total", out JsonElement totalElement)
+                    && totalElement.TryGetInt32(out int totalValue))
+                {
+                    total = totalValue;
+                }
+
+                if (root.TryGetProperty("data", out JsonElement dataElement)
+                    && dataElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (JsonElement itemElement in dataElement.EnumerateArray())
+                        list.Add(_alegraConverterL04.ConverterGetItems(itemElement));
+                }
+            }
+
+            return list;
+        }
     }
 }
