@@ -102,16 +102,6 @@ namespace PetraConectBack.Managers.L30
 
                     if (facturaLocal.Facturas.Count > 0)
                     {
-                        resultados.Add(new SetFacturaItemResponse
-                        {
-                            IdAlegra = idAlegra,
-                            ExisteLocalmente = true,
-                            Registrada = false,
-                            IsOk = true,
-                            Mensaje = "Factura ya existe localmente",
-                            IdFacturaLocal = facturaLocal.Facturas[0].IdFactura,
-                            ReferenciasProductos = referencias
-                        });
                         facturasExistentes++;
                         continue;
                     }
