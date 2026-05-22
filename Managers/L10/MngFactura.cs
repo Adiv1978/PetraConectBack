@@ -47,5 +47,19 @@ namespace PetraConectBack.Managers.L10
             List<FacturaItemResponse> result = _facturaConverterL05.ConverterGetFacturasByStatusActual(table);
             return result;
         }
+
+        public async Task<SetFacturaDbResponse?> SetFactura(SetFacturaDbRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            string sql = RsFactura.SetFactura;
+            int minutosCaduca = _settingHelper.GetSessionMinutes();
+            List<Npgsql.NpgsqlParameter> parameters = _facturaConverterL05.Converter(request, minutosCaduca);
+            DataTable table = await _bdHelper.ExecuteDataTableAsync(sql, parameters);
+            List<SetFacturaDbResponse> result = _facturaConverterL05.ConverterSetFactura(table);
+            return result.FirstOrDefault();
+        }
+
     }
 }
