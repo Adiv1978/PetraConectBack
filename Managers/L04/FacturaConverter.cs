@@ -31,6 +31,21 @@ namespace PetraConectBack.Managers.L04
             };
         }
 
+
+        public List<NpgsqlParameter> Converter(SetFacturaDbRequest request, int minutosCaduca)
+        {
+            return new List<NpgsqlParameter>
+            {
+                new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value),
+                new NpgsqlParameter("@p_minutos_caduca", minutosCaduca),
+                new NpgsqlParameter("@p_idalegra", request.IdAlegra ?? (object)DBNull.Value),
+                new NpgsqlParameter("@p_observacion", request.Observacion ?? (object)DBNull.Value),
+                request.ReferenciasProductos == null || request.ReferenciasProductos.Count == 0
+                    ? new NpgsqlParameter("@p_referenciasproductos", NpgsqlDbType.Array | NpgsqlDbType.Varchar) { Value = DBNull.Value }
+                    : new NpgsqlParameter("@p_referenciasproductos", NpgsqlDbType.Array | NpgsqlDbType.Varchar) { Value = request.ReferenciasProductos.ToArray() }
+            };
+        }
+
         public FacturaItemResponse ConverterGetFactura(DataRow row)
         {
             return ConverterFacturaItem(row);
@@ -77,6 +92,17 @@ namespace PetraConectBack.Managers.L04
             }
 
             return item;
+        }
+
+
+        public SetFacturaDbResponse ConverterSetFactura(DataRow row)
+        {
+            return new SetFacturaDbResponse
+            {
+                IsOk = row["isok"] != DBNull.Value && Convert.ToBoolean(row["isok"]),
+                Mensaje = row["mensaje"] == DBNull.Value ? null : Convert.ToString(row["mensaje"]),
+                IdFactura = row["idfactura"] == DBNull.Value ? null : Convert.ToInt64(row["idfactura"])
+            };
         }
 
         public FacturaDetalleItemResponse ConverterFacturaDetalle(JsonElement detalleElement)

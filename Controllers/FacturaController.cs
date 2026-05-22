@@ -78,5 +78,45 @@ namespace PetraConectBack.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpPost("SetFactura")]
+        public async Task<ActionResult<SetFacturaResponse>> SetFactura([FromBody] SetFacturaRequest request)
+        {
+            try
+            {
+                MngFactura mngFactura = new MngFactura(_configuration);
+                SetFacturaResponse response = await mngFactura.SetFactura(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                SetFacturaResponse response = new SetFacturaResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    FacturasAlegraConsultadas = 0,
+                    FacturasExistentes = 0,
+                    FacturasRegistradas = 0,
+                    FacturasConError = 0,
+                    Resultados = new List<SetFacturaItemResponse>()
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                SetFacturaResponse response = new SetFacturaResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al registrar facturas desde Alegra.",
+                    FacturasAlegraConsultadas = 0,
+                    FacturasExistentes = 0,
+                    FacturasRegistradas = 0,
+                    FacturasConError = 0,
+                    Resultados = new List<SetFacturaItemResponse>()
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

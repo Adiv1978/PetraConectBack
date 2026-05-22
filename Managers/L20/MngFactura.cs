@@ -1,6 +1,7 @@
 using PetraConectBack.Types.Request;
 using PetraConectBack.Types.Response;
 using PetraConectBack.Types.Utility;
+using System.Linq;
 
 namespace PetraConectBack.Managers.L20
 {
@@ -92,5 +93,43 @@ namespace PetraConectBack.Managers.L20
                 throw new ClientException("Ocurrió un error interno al consultar facturas por estatus.", "GET_FACTURAS_STATUS_INTERNAL_ERROR", ex);
             }
         }
+
+        public async Task<SetFacturaDbResponse> SetFactura(SetFacturaDbRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngFactura.SetFactura - Entrada.");
+                if (request == null)
+                    throw new ClientException("La solicitud para registrar la factura no puede estar vacía.", "SET_FACTURA_REQUEST_NULL");
+                if (string.IsNullOrWhiteSpace(request.SessionToken))
+                    throw new ClientException("El token de sesión es obligatorio para registrar la factura.", "SET_FACTURA_SESSION_TOKEN_EMPTY");
+                if (string.IsNullOrWhiteSpace(request.IdAlegra))
+                    throw new ClientException("El Id de Alegra es obligatorio para registrar la factura.", "SET_FACTURA_ID_ALEGRA_EMPTY");
+                if (request.ReferenciasProductos == null || request.ReferenciasProductos.Count == 0)
+                    throw new ClientException("Debe enviar al menos una referencia de producto para registrar la factura.", "SET_FACTURA_REFERENCIAS_EMPTY");
+                if (request.ReferenciasProductos.Any(x => string.IsNullOrWhiteSpace(x)))
+                    throw new ClientException("No se permiten referencias de producto vacías.", "SET_FACTURA_REFERENCIA_ITEM_EMPTY");
+
+                SetFacturaDbResponse? response = await _mngFacturaL10.SetFactura(request);
+                if (response == null)
+                    throw new ClientException("No se recibió respuesta desde la base de datos al registrar la factura.", "SET_FACTURA_DB_EMPTY_RESPONSE");
+                if (!response.IsOk)
+                    throw new ClientException(response.Mensaje ?? "No fue posible registrar la factura.", "SET_FACTURA_BUSINESS_ERROR");
+
+                _mngLogL10.WriteInfo("L20.MngFactura.SetFactura - Salida correcta. IdFactura: " + response.IdFactura);
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning("L20.MngFactura.SetFactura - Error controlado: " + ex.Message + " Código: " + ex.Codigo);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException("Ocurrió un error interno al registrar la factura.", "SET_FACTURA_INTERNAL_ERROR", ex);
+            }
+        }
+
     }
 }

@@ -32,4 +32,15 @@ FROM petra.get_facturas_por_status_actual
     @p_limit
 );</value>
   </data>
+  <data name="SetFactura" xml:space="preserve">
+    <value>SELECT *
+FROM petra.registrar_factura_enviada
+(
+    @p_sessiontoken,
+    @p_minutos_caduca,
+    @p_idalegra,
+    @p_observacion,
+    @p_referenciasproductos
+);</value>
+  </data>
 </root>
