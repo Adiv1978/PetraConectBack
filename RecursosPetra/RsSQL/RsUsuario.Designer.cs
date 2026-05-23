@@ -60,13 +60,8 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
             }
         }
         
-
         /// <summary>
-        ///   Busca una cadena traducida similar a SELECT *
-FROM petra.getusuariobysessiontoken
-(
-    @p_sessiontoken
-);.
+        ///   Busca una cadena traducida similar a SELECT * FROM Petra.getusuariobysessiontoken(    @p_sessiontoken);.
         /// </summary>
         public static string GetUsuarioBySessionToken {
             get {
@@ -75,13 +70,7 @@ FROM petra.getusuariobysessiontoken
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a SELECT *
-FROM petra.validar_usuario_crear_sesion
-(
-    @p_nick,
-    @p_pass,
-    @p_minutos_caduca
-);.
+        ///   Busca una cadena traducida similar a SELECT * FROM petra.validar_usuario_crear_sesion(    @p_nick,    @p_pass,    @p_minutos_caduca);.
         /// </summary>
         public static string LoginUsuario {
             get {

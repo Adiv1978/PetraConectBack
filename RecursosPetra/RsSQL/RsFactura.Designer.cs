@@ -49,5 +49,13 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
                 return ResourceManager.GetString("SetFactura", resourceCulture);
             }
         }
+
+        public static string SetFacturaStatus
+        {
+            get
+            {
+                return ResourceManager.GetString("SetFacturaStatus", resourceCulture);
+            }
+        }
     }
 }
