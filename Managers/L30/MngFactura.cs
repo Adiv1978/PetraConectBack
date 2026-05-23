@@ -30,6 +30,11 @@ namespace PetraConectBack.Managers.L30
             return await _mngFacturaL20.GetFacturasByStatusActual(request);
         }
 
+        public async Task<SetFacturaStatusResponse> SetFacturaStatus(SetFacturaStatusRequest request)
+        {
+            return await _mngFacturaL20.SetFacturaStatus(request);
+        }
+
         public async Task<SetFacturaResponse> SetFactura(SetFacturaRequest request)
         {
             if (request == null)

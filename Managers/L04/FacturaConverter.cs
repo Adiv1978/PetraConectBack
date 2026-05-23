@@ -32,6 +32,19 @@ namespace PetraConectBack.Managers.L04
         }
 
 
+
+        public List<NpgsqlParameter> Converter(SetFacturaStatusRequest request, int minutosCaduca)
+        {
+            return new List<NpgsqlParameter>
+            {
+                new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value),
+                new NpgsqlParameter("@p_minutos_caduca", minutosCaduca),
+                new NpgsqlParameter("@p_idfactura", request.IdFactura ?? (object)DBNull.Value),
+                new NpgsqlParameter("@p_nuevo_status", NpgsqlDbType.Varchar) { Value = request.NuevoStatus ?? (object)DBNull.Value },
+                new NpgsqlParameter("@p_comentario", request.Comentario ?? (object)DBNull.Value)
+            };
+        }
+
         public List<NpgsqlParameter> Converter(SetFacturaDbRequest request, int minutosCaduca)
         {
             return new List<NpgsqlParameter>
@@ -94,6 +107,18 @@ namespace PetraConectBack.Managers.L04
             return item;
         }
 
+
+
+        public SetFacturaStatusResponse ConverterSetFacturaStatus(DataRow row)
+        {
+            return new SetFacturaStatusResponse
+            {
+                IsOk = row["isok"] != DBNull.Value && Convert.ToBoolean(row["isok"]),
+                Mensaje = row["mensaje"] == DBNull.Value ? null : Convert.ToString(row["mensaje"]),
+                IdFactura = row["idfactura"] == DBNull.Value ? null : Convert.ToInt64(row["idfactura"]),
+                Status = row["status"] == DBNull.Value ? null : Convert.ToString(row["status"])
+            };
+        }
 
         public SetFacturaDbResponse ConverterSetFactura(DataRow row)
         {

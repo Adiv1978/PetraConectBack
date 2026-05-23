@@ -29,6 +29,11 @@ namespace PetraConectBack.Managers.L05
             return _facturaConverterL04.Converter(request, minutosCaduca);
         }
 
+        public List<NpgsqlParameter> Converter(SetFacturaStatusRequest request, int minutosCaduca)
+        {
+            return _facturaConverterL04.Converter(request, minutosCaduca);
+        }
+
         public List<FacturaItemResponse> ConverterGetFactura(DataTable table)
         {
             List<FacturaItemResponse> list = new List<FacturaItemResponse>();
@@ -45,6 +50,16 @@ namespace PetraConectBack.Managers.L05
             foreach (DataRow row in table.Rows)
             {
                 list.Add(_facturaConverterL04.ConverterSetFactura(row));
+            }
+            return list;
+        }
+
+        public List<SetFacturaStatusResponse> ConverterSetFacturaStatus(DataTable table)
+        {
+            List<SetFacturaStatusResponse> list = new List<SetFacturaStatusResponse>();
+            foreach (DataRow row in table.Rows)
+            {
+                list.Add(_facturaConverterL04.ConverterSetFacturaStatus(row));
             }
             return list;
         }

@@ -43,4 +43,15 @@ FROM petra.registrar_factura_enviada
     @p_referenciasproductos
 );</value>
   </data>
+  <data name="SetFacturaStatus" xml:space="preserve">
+    <value>SELECT *
+FROM petra.agregar_estatus_factura
+(
+    @p_sessiontoken,
+    @p_minutos_caduca,
+    @p_idfactura,
+    @p_nuevo_status,
+    @p_comentario
+);</value>
+  </data>
 </root>

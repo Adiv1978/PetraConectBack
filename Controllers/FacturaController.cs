@@ -79,6 +79,40 @@ namespace PetraConectBack.Controllers
             }
         }
 
+
+        [HttpPost("SetFacturaStatus")]
+        public async Task<ActionResult<SetFacturaStatusResponse>> SetFacturaStatus([FromBody] SetFacturaStatusRequest request)
+        {
+            try
+            {
+                MngFactura mngFactura = new MngFactura(_configuration);
+                SetFacturaStatusResponse response = await mngFactura.SetFacturaStatus(request);
+                return Ok(response);
+            }
+            catch (ClientException ex)
+            {
+                SetFacturaStatusResponse response = new SetFacturaStatusResponse
+                {
+                    IsOk = false,
+                    Mensaje = ex.Message,
+                    IdFactura = null,
+                    Status = null
+                };
+                return BadRequest(response);
+            }
+            catch (Exception)
+            {
+                SetFacturaStatusResponse response = new SetFacturaStatusResponse
+                {
+                    IsOk = false,
+                    Mensaje = "Ocurrió un error interno en el servidor al registrar el estatus de la factura.",
+                    IdFactura = null,
+                    Status = null
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
         [HttpPost("SetFactura")]
         public async Task<ActionResult<SetFacturaResponse>> SetFactura([FromBody] SetFacturaRequest request)
         {

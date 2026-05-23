@@ -131,5 +131,45 @@ namespace PetraConectBack.Managers.L20
             }
         }
 
+
+        public async Task<SetFacturaStatusResponse> SetFacturaStatus(SetFacturaStatusRequest request)
+        {
+            try
+            {
+                _mngLogL10.WriteInfo("L20.MngFactura.SetFacturaStatus - Entrada.");
+                if (request == null)
+                    throw new ClientException("La solicitud para registrar el estatus de la factura no puede estar vacía.", "SET_FACTURA_STATUS_REQUEST_NULL");
+                if (string.IsNullOrWhiteSpace(request.SessionToken))
+                    throw new ClientException("El token de sesión es obligatorio para registrar el estatus de la factura.", "SET_FACTURA_STATUS_SESSION_TOKEN_EMPTY");
+                if (!request.IdFactura.HasValue)
+                    throw new ClientException("El Id de la factura es obligatorio para registrar el estatus.", "SET_FACTURA_STATUS_ID_FACTURA_EMPTY");
+                if (string.IsNullOrWhiteSpace(request.NuevoStatus))
+                    throw new ClientException("El nuevo estatus de la factura es obligatorio.", "SET_FACTURA_STATUS_STATUS_EMPTY");
+
+                string[] validStatuses = new[] { "Enviado", "Recibido", "Aceptado", "Procesando", "Entregado", "Rechazado", "Cancelado" };
+                if (!validStatuses.Contains(request.NuevoStatus, StringComparer.OrdinalIgnoreCase))
+                    throw new ClientException("El nuevo estatus enviado no es válido.", "SET_FACTURA_STATUS_STATUS_INVALID");
+
+                SetFacturaStatusResponse? response = await _mngFacturaL10.SetFacturaStatus(request);
+                if (response == null)
+                    throw new ClientException("No se recibió respuesta desde la base de datos al registrar el estatus de la factura.", "SET_FACTURA_STATUS_DB_EMPTY_RESPONSE");
+                if (!response.IsOk)
+                    throw new ClientException(response.Mensaje ?? "No fue posible registrar el estatus de la factura.", "SET_FACTURA_STATUS_BUSINESS_ERROR");
+
+                _mngLogL10.WriteInfo("L20.MngFactura.SetFacturaStatus - Salida correcta. IdFactura: " + response.IdFactura + " Status: " + response.Status);
+                return response;
+            }
+            catch (ClientException ex)
+            {
+                _mngLogL10.WriteWarning("L20.MngFactura.SetFacturaStatus - Error controlado: " + ex.Message + " Código: " + ex.Codigo);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _mngLogL10.WriteException(ex);
+                throw new ClientException("Ocurrió un error interno al registrar el estatus de la factura.", "SET_FACTURA_STATUS_INTERNAL_ERROR", ex);
+            }
+        }
+
     }
 }
