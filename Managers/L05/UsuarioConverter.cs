@@ -13,11 +13,11 @@ namespace PetraConectBack.Managers.L05
             _usuarioConverterL04 = new L04.UsuarioConverter();
         }
 
-        public List<NpgsqlParameter> Converter(SetUsuarioRequest request)
+        public List<NpgsqlParameter> Converter(SetUsuarioRequest request, int minutosCaduca)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
-            return _usuarioConverterL04.Converter(request);
+            return _usuarioConverterL04.Converter(request, minutosCaduca);
         }
 
         public List<SetUsuarioResponse> Converter(DataTable table)

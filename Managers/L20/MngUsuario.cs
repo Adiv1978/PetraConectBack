@@ -28,7 +28,12 @@ namespace PetraConectBack.Managers.L20
                         "La solicitud para registrar el usuario no puede estar vacía.",
                         "SET_USUARIO_REQUEST_NULL"
                     );
-                SetUsuarioResponse? response =  await _mngUsuarioL10.SetUsuario(request);
+                if (string.IsNullOrWhiteSpace(request.SessionToken))
+                    throw new ClientException(
+                        "Debe especificar el token de sesión para registrar el usuario.",
+                        "SET_USUARIO_SESSION_TOKEN_REQUIRED"
+                    );
+                SetUsuarioResponse? response = await _mngUsuarioL10.SetUsuario(request);
                 if (response == null)
                     throw new ClientException(
                         "No se recibió respuesta desde la base de datos al registrar el usuario.",

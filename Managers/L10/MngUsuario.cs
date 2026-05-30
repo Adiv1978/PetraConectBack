@@ -28,7 +28,8 @@ namespace PetraConectBack.Managers.L10
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
             string sql = RsUsuario.SetUsuario;
-            List<NpgsqlParameter> parameters = _usuarioConverterL05.Converter(request);
+            int minutosCaduca = _settingHelper.GetSessionMinutes();
+            List<NpgsqlParameter> parameters = _usuarioConverterL05.Converter(request, minutosCaduca);
             DataTable table = await _bdHelper.ExecuteDataTableAsync(sql, parameters);
             List<SetUsuarioResponse> result = _usuarioConverterL05.Converter(table);
             if (result.Count == 0)

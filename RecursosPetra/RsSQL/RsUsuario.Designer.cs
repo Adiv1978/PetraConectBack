@@ -88,7 +88,7 @@ namespace PetraConectBack.RecursosPetra.RsSQL {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a SELECT * FROM petra.registrar_usuario (@p_nick, @p_pass,@p_emailalegra,@p_keyalegra);.
+        ///   Busca una cadena traducida similar a SELECT * FROM petra.registrar_usuario (@p_sessiontoken,@p_minutos_caduca,@p_nick,@p_pass,@p_emailalegra,@p_keyalegra);.
         /// </summary>
         public static string SetUsuario {
             get {

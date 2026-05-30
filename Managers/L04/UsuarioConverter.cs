@@ -7,11 +7,13 @@ namespace PetraConectBack.Managers.L04
 {
     public class UsuarioConverter
     {
-        public List<NpgsqlParameter> Converter(SetUsuarioRequest request)
+        public List<NpgsqlParameter> Converter(SetUsuarioRequest request, int minutosCaduca)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
             List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+            parameters.Add(new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value));
+            parameters.Add(new NpgsqlParameter("@p_minutos_caduca", minutosCaduca));
             parameters.Add(new NpgsqlParameter("@p_nick", request.Nick ?? (object)DBNull.Value));
             parameters.Add(new NpgsqlParameter("@p_pass", request.Pass ?? (object)DBNull.Value));
             parameters.Add(new NpgsqlParameter("@p_emailalegra", request.EmailAlegra ?? (object)DBNull.Value));

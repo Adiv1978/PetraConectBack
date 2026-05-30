@@ -17,7 +17,8 @@ namespace PetraConectBack.Managers.L30
 
         public async Task<SetUsuarioResponse> SetUsuario(SetUsuarioRequest request)
         {
-            return await _mngUsuarioL20.SetUsuario(request);
+            SetUsuarioResponse response = await _mngUsuarioL20.SetUsuario(request);
+            return response;
         }
 
         public async Task<UpdateUsuarioResponse> UpdateUser(UpdateUsuarioRequest request)
