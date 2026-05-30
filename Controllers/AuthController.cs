@@ -24,6 +24,19 @@ namespace PetraConectBack.Controllers
         {
             try
             {
+                if (request != null &&
+                    string.IsNullOrWhiteSpace(request.SessionToken) &&
+                    Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+                {
+                    string sessionToken = authorizationHeader.ToString();
+                    const string bearerPrefix = "Bearer ";
+                    if (sessionToken.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+                        sessionToken = sessionToken.Substring(bearerPrefix.Length).Trim();
+
+                    if (!string.IsNullOrWhiteSpace(sessionToken))
+                        request.SessionToken = sessionToken;
+                }
+
                 MngUsuario mngUsuario = new MngUsuario(_configuration);
                 SetUsuarioResponse response =
                     await mngUsuario.SetUsuario(request);

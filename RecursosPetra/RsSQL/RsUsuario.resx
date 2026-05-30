@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SetUsuario" xml:space="preserve">
-    <value>SELECT * FROM petra.registrar_usuario (@p_nick, @p_pass,@p_emailalegra,@p_keyalegra);</value>
+    <value>SELECT * FROM petra.registrar_usuario (@p_sessiontoken,@p_minutos_caduca,@p_nick,@p_pass,@p_emailalegra,@p_keyalegra);</value>
   </data>
   <data name="UpdateUser" xml:space="preserve">
     <value>SELECT * FROM petra.actualizar_usuario (@p_sessiontoken,@p_minutos_caduca,@p_pass);</value>
