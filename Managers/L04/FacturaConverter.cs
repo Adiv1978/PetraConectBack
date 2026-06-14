@@ -24,10 +24,27 @@ namespace PetraConectBack.Managers.L04
         {
             return new List<NpgsqlParameter>
             {
-                new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value),
-                new NpgsqlParameter("@p_minutos_caduca", minutosCaduca),
-                new NpgsqlParameter("@p_status", NpgsqlDbType.Varchar) { Value = request.Status ?? (object)DBNull.Value },
-                new NpgsqlParameter("@p_limit", request.Limit ?? 100)
+                new NpgsqlParameter("@p_sessiontoken", NpgsqlDbType.Varchar)
+                {
+                    Value = request.SessionToken ?? (object)DBNull.Value
+                },
+
+                new NpgsqlParameter("@p_minutos_caduca", NpgsqlDbType.Integer)
+                {
+                    Value = minutosCaduca
+                },
+
+                new NpgsqlParameter("@p_status", NpgsqlDbType.Varchar)
+                {
+                    Value = string.IsNullOrWhiteSpace(request.Status)
+                        ? (object)DBNull.Value
+                        : request.Status.Trim()
+                },
+
+                new NpgsqlParameter("@p_limit", NpgsqlDbType.Integer)
+                {
+                    Value = request.Limit ?? 100
+                }
             };
         }
 
@@ -37,11 +54,34 @@ namespace PetraConectBack.Managers.L04
         {
             return new List<NpgsqlParameter>
             {
-                new NpgsqlParameter("@p_sessiontoken", request.SessionToken ?? (object)DBNull.Value),
-                new NpgsqlParameter("@p_minutos_caduca", minutosCaduca),
-                new NpgsqlParameter("@p_idfactura", request.IdFactura ?? (object)DBNull.Value),
-                new NpgsqlParameter("@p_nuevo_status", NpgsqlDbType.Varchar) { Value = request.NuevoStatus ?? (object)DBNull.Value },
-                new NpgsqlParameter("@p_comentario", request.Comentario ?? (object)DBNull.Value)
+                new NpgsqlParameter("@p_sessiontoken", NpgsqlDbType.Varchar)
+                {
+                    Value = request.SessionToken ?? (object)DBNull.Value
+                },
+
+                new NpgsqlParameter("@p_minutos_caduca", NpgsqlDbType.Integer)
+                {
+                    Value = minutosCaduca
+                },
+
+                new NpgsqlParameter("@p_idfactura", NpgsqlDbType.Bigint)
+                {
+                    Value = request.IdFactura
+                },
+
+                new NpgsqlParameter("@p_nuevo_status", NpgsqlDbType.Varchar)
+                {
+                    Value = string.IsNullOrWhiteSpace(request.NuevoStatus)
+                        ? (object)DBNull.Value
+                        : request.NuevoStatus.Trim()
+                },
+
+                new NpgsqlParameter("@p_comentario", NpgsqlDbType.Text)
+                {
+                    Value = string.IsNullOrWhiteSpace(request.Comentario)
+                        ? (object)DBNull.Value
+                        : request.Comentario.Trim()
+                }
             };
         }
 

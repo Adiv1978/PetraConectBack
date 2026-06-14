@@ -4,12 +4,28 @@ using PetraConectBack.Types.Request;
 
 namespace PetraConectBack.Managers.L10
 {
+
     public class MngAlegra
     {
         private readonly AlegraHelper _alegraHelper;
         private readonly L05.AlegraConverter _alegraConverterL05;
         private readonly int _lastFactLimit;
         private readonly int _itemsLimit;
+
+        public static DateTime NowRD()
+        {
+            TimeZoneInfo zonaRD;
+            try
+            {
+                zonaRD = TimeZoneInfo.FindSystemTimeZoneById("America/Santo_Domingo");
+            }
+            catch
+            {
+                zonaRD = TimeZoneInfo.FindSystemTimeZoneById("SA Western Standard Time");
+            }
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaRD);
+        }
+
 
         public MngAlegra(IConfiguration configuration)
         {
@@ -33,7 +49,7 @@ namespace PetraConectBack.Managers.L10
                 ["limit"] = _lastFactLimit.ToString(),
                 ["order_direction"] = "DESC",
                 ["order_field"] = "id",
-                ["date"] = DateTime.Now.ToString("yyyy-MM-dd")
+                ["date"] = NowRD().ToString("yyyy-MM-dd")
             };
             string json = await _alegraHelper.GetInvoicesAsync(request.EmailAlegra ?? string.Empty, request.KeyAlegra ?? string.Empty, queryParams);
             return _alegraConverterL05.ConverterGetLastFact(json);
